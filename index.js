@@ -307,15 +307,32 @@ builder.defineMetaHandler(async ({ type, id }) => {
             const epgData = await getEpg();
             const info = getEpgInfo(epgData, canale.epgId);
             if (info && info.current) {
+                const currentStart = parseEpgTime(info.current.$.start);
+                const currentStop = parseEpgTime(info.current.$.stop);
+                const csHH = currentStart.getHours().toString().padStart(2, '0');
+                const csMM = currentStart.getMinutes().toString().padStart(2, '0');
+                const ceHH = currentStop.getHours().toString().padStart(2, '0');
+                const ceMM = currentStop.getMinutes().toString().padStart(2, '0');
+
                 releaseInfo = `In onda ora: ${epgText(info.current.title)}`;
+
+                let desc = `IN ONDA ORA: ${epgText(info.current.title)}`;
+                if (info.current.desc) desc += ` ${epgText(info.current.desc)}`;
+                desc += ` ${csHH}:${csMM} - ${ceHH}:${ceMM}`;
+
                 if (info.upcoming && info.upcoming.length > 0) {
-                    description = info.upcoming.map(p => {
+                    desc += ' • PROGRAMMI IN ARRIVO: ';
+                    desc += info.upcoming.map(p => {
                         const start = parseEpgTime(p.$.start);
-                        const hh = start.getHours().toString().padStart(2, '0');
-                        const mm = start.getMinutes().toString().padStart(2, '0');
-                        return `${hh}:${mm} - ${epgText(p.title)}`;
-                    }).join('\n');
+                        const stop = parseEpgTime(p.$.stop);
+                        const sHH = start.getHours().toString().padStart(2, '0');
+                        const sMM = start.getMinutes().toString().padStart(2, '0');
+                        const eHH = stop.getHours().toString().padStart(2, '0');
+                        const eMM = stop.getMinutes().toString().padStart(2, '0');
+                        return `${sHH}:${sMM} - ${eHH}:${eMM} ${epgText(p.title)}`;
+                    }).join(' • ');
                 }
+                description = desc;
             }
         } catch (e) {
             console.error('EPG error:', e);
