@@ -15,14 +15,17 @@ const manifest = {
     description: 'Canali italiani live',
     types: ['tv'],
     catalogs: [
-        {
-            type: 'tv',
-            id: 'italiantv',
-            name: 'Canali Italiani',
-            extra: [{ name: 'genre', isRequired: false }],
-            genres: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro']
-        }
-    ],
+    {
+        type: 'tv',
+        id: 'italiantv',
+        name: 'Canali Italiani',
+        extra: [
+            { name: 'genre', isRequired: false },
+            { name: 'skip', isRequired: false }
+        ],
+        genres: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro']
+    }
+],
     resources: ['catalog', 'meta', 'stream'],
     idPrefixes: ['mpdtv:']
 };
