@@ -1,0 +1,15 @@
+services:
+  mpdtv:
+    image: node:20-alpine
+    container_name: mpdtv
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && node index.js"
+    restart: unless-stopped
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
