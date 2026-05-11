@@ -294,9 +294,33 @@ builder.defineCatalogHandler(({ type, id, extra }) => {
     return Promise.resolve({ metas });
 });
 
-builder.defineMetaHandler(({ type, id }) => {
+builder.defineMetaHandler(async ({ type, id }) => {
     const canale = CANALI.find(c => c.id === id);
     if (!canale) return Promise.resolve({ meta: null });
+
+    let releaseInfo = null;
+    let description = null;
+
+    if (canale.epgId) {
+        try {
+            const epgData = await getEpg();
+            const info = getEpgInfo(epgData, canale.epgId);
+            if (info && info.current) {
+                releaseInfo = `In onda ora: ${info.current.title[0]}`;
+                if (info.upcoming && info.upcoming.length > 0) {
+                    description = info.upcoming.map(p => {
+                        const start = parseEpgTime(p.$.start);
+                        const hh = start.getHours().toString().padStart(2, '0');
+                        const mm = start.getMinutes().toString().padStart(2, '0');
+                        return `${hh}:${mm} - ${p.title[0]}`;
+                    }).join('\n');
+                }
+            }
+        } catch (e) {
+            console.error('EPG error:', e);
+        }
+    }
+
     return Promise.resolve({
         meta: {
             id: canale.id,
@@ -305,7 +329,9 @@ builder.defineMetaHandler(({ type, id }) => {
             poster: canale.poster,
             logo: canale.logo,
             background: canale.bg,
-            genres: [canale.genre]
+            genres: [canale.genre],
+            releaseInfo,
+            description,
         }
     });
 });
