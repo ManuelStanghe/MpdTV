@@ -247,6 +247,14 @@ function getEpgInfo(epgData, epgId) {
     }
 }
 
+function epgText(field) {
+    if (!field) return null;
+    const val = field[0];
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object' && val._) return val._;
+    return null;
+}
+
 function parseStream(content, channelName) {
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -299,13 +307,13 @@ builder.defineMetaHandler(async ({ type, id }) => {
             const epgData = await getEpg();
             const info = getEpgInfo(epgData, canale.epgId);
             if (info && info.current) {
-                releaseInfo = `In onda ora: ${info.current.title[0]}`;
+                releaseInfo = `In onda ora: ${epgText(info.current.title)}`;
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = info.upcoming.map(p => {
                         const start = parseEpgTime(p.$.start);
                         const hh = start.getHours().toString().padStart(2, '0');
                         const mm = start.getMinutes().toString().padStart(2, '0');
-                        return `${hh}:${mm} - ${p.title[0]}`;
+                        return `${hh}:${mm} - ${epgText(p.title)}`;
                     }).join('\n');
                 }
             }
