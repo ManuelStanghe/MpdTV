@@ -243,6 +243,7 @@ function getEpgInfo(epgData, epgId) {
             const stop = parseEpgTime(p.$.stop);
             return start <= now && stop > now;
         });
+        console.log('CURRENT for', epgId, ':', current ? epgText(current.title) : 'none');
         const upcoming = channelProg
             .filter(p => parseEpgTime(p.$.start) > now)
             .slice(0, 5);
