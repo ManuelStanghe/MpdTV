@@ -218,6 +218,63 @@ function parseStream(content, channelName) {
     return null;
 }
 
+const { parseStringPromise } = require('xml2js');
+
+const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
+let epgCache = null;
+let lastFetchEpg = 0;
+const EPG_CACHE_TTL = 60 * 60 * 1000; // 1 ora
+
+async function getEpg() {
+    const now = Date.now();
+    if (epgCache && now - lastFetchEpg < EPG_CACHE_TTL) return epgCache;
+    try {
+        const xml = await fetchUrl(EPG_URL);
+        const parsed = await parseStringPromise(xml);
+        epgCache = parsed;
+        lastFetchEpg = now;
+    } catch (e) {
+        console.error('EPG fetch error:', e);
+    }
+    return epgCache;
+}
+
+function parseEpgTime(t) {
+    // formato: 20260511013500 +0000
+    const s = t.replace(/\s.*/, '');
+    return new Date(
+        parseInt(s.slice(0,4)),
+        parseInt(s.slice(4,6)) - 1,
+        parseInt(s.slice(6,8)),
+        parseInt(s.slice(8,10)),
+        parseInt(s.slice(10,12)),
+        parseInt(s.slice(12,14))
+    );
+}
+
+function getEpgInfo(epgData, epgId) {
+    if (!epgData || !epgId) return null;
+    try {
+        const programmes = epgData.tv.programme || [];
+        const now = new Date();
+        const channelProg = programmes.filter(p => p.$.channel === epgId);
+        
+        const current = channelProg.find(p => {
+            const start = parseEpgTime(p.$.start);
+            const stop = parseEpgTime(p.$.stop);
+            return start <= now && stop > now;
+        });
+
+        const upcoming = channelProg
+            .filter(p => parseEpgTime(p.$.start) > now)
+            .slice(0, 5);
+
+        return { current, upcoming };
+    } catch (e) {
+        return null;
+    }
+}
+
 const builder = new addonBuilder(manifest);
 
 builder.defineCatalogHandler(({ type, id, extra }) => {
