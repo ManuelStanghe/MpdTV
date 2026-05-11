@@ -20,10 +20,13 @@ const manifest = {
         id: 'italiantv',
         name: 'Canali Italiani',
         extra: [
-            { name: 'genre', isRequired: false },
+            { 
+                name: 'genre', 
+                options: ['Tutti', 'Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
+                isRequired: false 
+            },
             { name: 'skip', isRequired: false }
-        ],
-        genres: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro']
+        ]
     }
 ],
     resources: ['catalog', 'meta', 'stream'],
