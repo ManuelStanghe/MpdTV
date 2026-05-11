@@ -217,7 +217,7 @@ async function getEpg() {
 
 function parseEpgTime(t) {
     const s = t.replace(/\s.*/, '');
-    return new Date(
+    const utc = Date.UTC(
         parseInt(s.slice(0,4)),
         parseInt(s.slice(4,6)) - 1,
         parseInt(s.slice(6,8)),
@@ -225,6 +225,7 @@ function parseEpgTime(t) {
         parseInt(s.slice(10,12)),
         parseInt(s.slice(12,14))
     );
+    return new Date(utc);
 }
 
 function getEpgInfo(epgData, epgId) {
