@@ -22,7 +22,7 @@ const manifest = {
         extra: [
             { 
                 name: 'genre', 
-                options: ['Tutti', 'Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
+                options: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
                 isRequired: false 
             },
             { name: 'skip', isRequired: false }
