@@ -233,7 +233,11 @@ function getEpgInfo(epgData, epgId) {
     try {
         const programmes = epgData.tv.programme || [];
         const now = new Date();
+        console.log('NOW UTC:', now.toISOString());
         const channelProg = programmes.filter(p => p.$.channel === epgId);
+        if (channelProg.length > 0) {
+            console.log('FIRST PROG START:', channelProg[0].$.start, '-> parsed:', parseEpgTime(channelProg[0].$.start).toISOString());
+        }
         const current = channelProg.find(p => {
             const start = parseEpgTime(p.$.start);
             const stop = parseEpgTime(p.$.stop);
