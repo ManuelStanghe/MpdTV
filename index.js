@@ -1,8 +1,10 @@
 const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 const https = require('https');
+const { parseStringPromise } = require('xml2js');
 
 const PLAYLIST_ZAPPR = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/refs/heads/main/playlist_zappr.m3u';
 const PLAYLIST_UAZNAO = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/refs/heads/main/playlist_uaznao.m3u';
+const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
 
 const LOGO_BASE = 'https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/italy/';
 const COVER_P = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/portrait/';
@@ -15,20 +17,20 @@ const manifest = {
     description: 'Canali italiani live',
     types: ['tv'],
     catalogs: [
-    {
-        type: 'tv',
-        id: 'italiantv',
-        name: 'Canali Italiani',
-        extra: [
-            { 
-                name: 'genre', 
-                options: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
-                isRequired: false 
-            },
-            { name: 'skip', isRequired: false }
-        ]
-    }
-],
+        {
+            type: 'tv',
+            id: 'italiantv',
+            name: 'Canali Italiani',
+            extra: [
+                {
+                    name: 'genre',
+                    options: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
+                    isRequired: false
+                },
+                { name: 'skip', isRequired: false }
+            ]
+        }
+    ],
     resources: ['catalog', 'meta', 'stream'],
     idPrefixes: ['mpdtv:']
 };
@@ -63,60 +65,60 @@ const CANALI = [
     { id: 'mpdtv:focus', name: 'Focus', epgId: null, poster: COVER_P+'focus.jpg', logo: LOGO_BASE+'focus-it.png', bg: COVER_L+'focus.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     { id: 'mpdtv:cine34', name: 'Cine34', epgId: null, poster: COVER_P+'cine-34.jpg', logo: LOGO_BASE+'cine34-it.png', bg: COVER_L+'cine-34.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     // SKY CINEMA
-    { id: 'mpdtv:skycinemauno', name: 'Sky Cinema Uno', epgId: null, poster: COVER_P+'sky-cinema-uno.jpg', logo: LOGO_BASE+'sky-cinema-uno-it.png', bg: COVER_L+'sky-cinema-uno.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemadue', name: 'Sky Cinema Due', epgId: null, poster: COVER_P+'sky-cinema-due.jpg', logo: LOGO_BASE+'sky-cinema-due-it.png', bg: COVER_L+'sky-cinema-due.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemaaction', name: 'Sky Cinema Action', epgId: null, poster: COVER_P+'sky-cinema-action.jpg', logo: LOGO_BASE+'sky-cinema-action-it.png', bg: COVER_L+'sky-cinema-action.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemacollection', name: 'Sky Cinema Collection', epgId: null, poster: COVER_P+'sky-cinema-collection.jpg', logo: LOGO_BASE+'sky-cinema-collection-it.png', bg: COVER_L+'sky-cinema-collection.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemacomedy', name: 'Sky Cinema Comedy', epgId: null, poster: COVER_P+'sky-cinema-comedy.jpg', logo: LOGO_BASE+'sky-cinema-comedy-it.png', bg: COVER_L+'sky-cinema-comedy.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemadrama', name: 'Sky Cinema Drama', epgId: null, poster: COVER_P+'sky-cinema-drama.jpg', logo: LOGO_BASE+'sky-cinema-drama-it.png', bg: COVER_L+'sky-cinema-drama.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemaillumination', name: 'Sky Cinema Illumination', epgId: null, poster: COVER_P+'sky-cinema-family.jpg', logo: LOGO_BASE+'sky-cinema-family-it.png', bg: COVER_L+'sky-cinema-family.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemaromance', name: 'Sky Cinema Romance', epgId: null, poster: COVER_P+'sky-cinema-romance.jpg', logo: LOGO_BASE+'sky-cinema-romance-it.png', bg: COVER_L+'sky-cinema-romance.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycinemasuspense', name: 'Sky Cinema Suspense', epgId: null, poster: COVER_P+'sky-cinema-suspense.jpg', logo: LOGO_BASE+'sky-cinema-suspense-it.png', bg: COVER_L+'sky-cinema-suspense.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
-    { id: 'mpdtv:skycrime', name: 'Sky Crime', epgId: null, poster: COVER_P+'sky-crime.jpg', logo: LOGO_BASE+'sky-crime-it.png', bg: COVER_L+'sky-crime.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemauno', name: 'Sky Cinema Uno', epgId: 'sky.cinema.uno.it', poster: COVER_P+'sky-cinema-uno.jpg', logo: LOGO_BASE+'sky-cinema-uno-it.png', bg: COVER_L+'sky-cinema-uno.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemadue', name: 'Sky Cinema Due', epgId: 'sky.cinema.due.it', poster: COVER_P+'sky-cinema-due.jpg', logo: LOGO_BASE+'sky-cinema-due-it.png', bg: COVER_L+'sky-cinema-due.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemaaction', name: 'Sky Cinema Action', epgId: 'sky.cinema.action.it', poster: COVER_P+'sky-cinema-action.jpg', logo: LOGO_BASE+'sky-cinema-action-it.png', bg: COVER_L+'sky-cinema-action.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemacollection', name: 'Sky Cinema Collection', epgId: 'sky.cinema.collection.it', poster: COVER_P+'sky-cinema-collection.jpg', logo: LOGO_BASE+'sky-cinema-collection-it.png', bg: COVER_L+'sky-cinema-collection.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemacomedy', name: 'Sky Cinema Comedy', epgId: 'sky.cinema.comedy.it', poster: COVER_P+'sky-cinema-comedy.jpg', logo: LOGO_BASE+'sky-cinema-comedy-it.png', bg: COVER_L+'sky-cinema-comedy.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemadrama', name: 'Sky Cinema Drama', epgId: 'sky.cinema.drama.it', poster: COVER_P+'sky-cinema-drama.jpg', logo: LOGO_BASE+'sky-cinema-drama-it.png', bg: COVER_L+'sky-cinema-drama.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemaillumination', name: 'Sky Cinema Illumination', epgId: 'sky.cinema.family.it', poster: COVER_P+'sky-cinema-family.jpg', logo: LOGO_BASE+'sky-cinema-family-it.png', bg: COVER_L+'sky-cinema-family.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemaromance', name: 'Sky Cinema Romance', epgId: 'sky.cinema.romance.it', poster: COVER_P+'sky-cinema-romance.jpg', logo: LOGO_BASE+'sky-cinema-romance-it.png', bg: COVER_L+'sky-cinema-romance.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycinemasuspense', name: 'Sky Cinema Suspense', epgId: 'sky.cinema.suspense.it', poster: COVER_P+'sky-cinema-suspense.jpg', logo: LOGO_BASE+'sky-cinema-suspense-it.png', bg: COVER_L+'sky-cinema-suspense.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
+    { id: 'mpdtv:skycrime', name: 'Sky Crime', epgId: 'sky.crime.it', poster: COVER_P+'sky-crime.jpg', logo: LOGO_BASE+'sky-crime-it.png', bg: COVER_L+'sky-crime.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
     // SKY SERIE
-    { id: 'mpdtv:skyatlantic', name: 'Sky Atlantic', epgId: null, poster: COVER_P+'sky-atlantic.jpg', logo: LOGO_BASE+'sky-atlantic-it.png', bg: COVER_L+'sky-atlantic.jpg', catalog: 'italiantv', genre: 'Sky Serie', playlist: 'uaznao' },
-    { id: 'mpdtv:skyserie', name: 'Sky Serie', epgId: null, poster: COVER_P+'sky-serie.jpg', logo: LOGO_BASE+'sky-serie-it.png', bg: COVER_L+'sky-serie.jpg', catalog: 'italiantv', genre: 'Sky Serie', playlist: 'uaznao' },
+    { id: 'mpdtv:skyatlantic', name: 'Sky Atlantic', epgId: 'sky.atlantic.it', poster: COVER_P+'sky-atlantic.jpg', logo: LOGO_BASE+'sky-atlantic-it.png', bg: COVER_L+'sky-atlantic.jpg', catalog: 'italiantv', genre: 'Sky Serie', playlist: 'uaznao' },
+    { id: 'mpdtv:skyserie', name: 'Sky Serie', epgId: 'sky.serie.it', poster: COVER_P+'sky-serie.jpg', logo: LOGO_BASE+'sky-serie-it.png', bg: COVER_L+'sky-serie.jpg', catalog: 'italiantv', genre: 'Sky Serie', playlist: 'uaznao' },
     // SKY INTRATTENIMENTO
-    { id: 'mpdtv:skyuno', name: 'Sky Uno', epgId: null, poster: COVER_P+'sky-uno.jpg', logo: LOGO_BASE+'sky-uno-it.png', bg: COVER_L+'sky-uno.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
+    { id: 'mpdtv:skyuno', name: 'Sky Uno', epgId: 'sky.uno.it', poster: COVER_P+'sky-uno.jpg', logo: LOGO_BASE+'sky-uno-it.png', bg: COVER_L+'sky-uno.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
     { id: 'mpdtv:skycollection', name: 'Sky Collection', epgId: null, poster: COVER_P+'sky-collection.jpg', logo: LOGO_BASE+'sky-collection-it.png', bg: COVER_L+'sky-collection.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
-    { id: 'mpdtv:skyadventure', name: 'Sky Adventure', epgId: null, poster: COVER_P+'sky-adventure.jpg', logo: LOGO_BASE+'sky-adventure-it.png', bg: COVER_L+'sky-adventure.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
-    { id: 'mpdtv:skyinvestigation', name: 'Sky Investigation', epgId: null, poster: COVER_P+'sky-investigation.jpg', logo: LOGO_BASE+'sky-investigation-it.png', bg: COVER_L+'sky-investigation.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
+    { id: 'mpdtv:skyadventure', name: 'Sky Adventure', epgId: 'sky.adventure.it', poster: COVER_P+'sky-adventure.jpg', logo: LOGO_BASE+'sky-adventure-it.png', bg: COVER_L+'sky-adventure.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
+    { id: 'mpdtv:skyinvestigation', name: 'Sky Investigation', epgId: 'sky.investigation.it', poster: COVER_P+'sky-investigation.jpg', logo: LOGO_BASE+'sky-investigation-it.png', bg: COVER_L+'sky-investigation.jpg', catalog: 'italiantv', genre: 'Sky Intrattenimento', playlist: 'uaznao' },
     // SKY SPORT
-    { id: 'mpdtv:skysportuno', name: 'Sky Sport Uno', epgId: null, poster: COVER_P+'sky-sport-uno.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-uno.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportmax', name: 'Sky Sport Max', epgId: null, poster: COVER_P+'sky-sport-max.jpg', logo: LOGO_BASE+'sky-sport-max-it.png', bg: COVER_L+'sky-sport-max.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportcalcio', name: 'Sky Sport Calcio', epgId: null, poster: COVER_P+'sky-sport-calcio.jpg', logo: LOGO_BASE+'sky-sport-calcio-it.png', bg: COVER_L+'sky-sport-calcio.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportf1', name: 'Sky Sport F1', epgId: null, poster: COVER_P+'sky-sport-f1.jpg', logo: LOGO_BASE+'sky-sport-f1-it.png', bg: COVER_L+'sky-sport-f1.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportmotogp', name: 'Sky Sport MotoGP', epgId: null, poster: COVER_P+'sky-sport-motogp.jpg', logo: LOGO_BASE+'sky-sport-motogp-it.png', bg: COVER_L+'sky-sport-motogp.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysporttennis', name: 'Sky Sport Tennis', epgId: null, poster: COVER_P+'sky-sport-tennis.jpg', logo: LOGO_BASE+'sky-sport-tennis-it.png', bg: COVER_L+'sky-sport-tennis.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportgolf', name: 'Sky Sport Golf', epgId: null, poster: COVER_P+'sky-sport-golf.jpg', logo: LOGO_BASE+'sky-sport-golf-it.png', bg: COVER_L+'sky-sport-golf.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportbasket', name: 'Sky Sport Basket', epgId: null, poster: COVER_P+'sky-sport-basket.jpg', logo: LOGO_BASE+'sky-sport-nba-it.png', bg: COVER_L+'sky-sport-basket.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportarena', name: 'Sky Sport Arena', epgId: null, poster: COVER_P+'sky-sport-arena.jpg', logo: LOGO_BASE+'sky-sport-arena-it.png', bg: COVER_L+'sky-sport-arena.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportlegend', name: 'Sky Sport Legend', epgId: null, poster: COVER_P+'sky-sport-legend.jpg', logo: LOGO_BASE+'sky-sport-legend-it.png', bg: COVER_L+'sky-sport-legend.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysportmix', name: 'Sky Sport Mix', epgId: null, poster: COVER_P+'sky-sport-mix.jpg', logo: LOGO_BASE+'sky-sport-mix-it.png', bg: COVER_L+'sky-sport-mix.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport24', name: 'Sky Sport 24', epgId: null, poster: COVER_P+'sky-sport-24.jpg', logo: LOGO_BASE+'sky-sport-24-it.png', bg: COVER_L+'sky-sport-24.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport251', name: 'Sky Sport 251', epgId: null, poster: COVER_P+'sky-sport-251.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-251.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport252', name: 'Sky Sport 252', epgId: null, poster: COVER_P+'sky-sport-252.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-252.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport253', name: 'Sky Sport 253', epgId: null, poster: COVER_P+'sky-sport-253.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-253.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport254', name: 'Sky Sport 254', epgId: null, poster: COVER_P+'sky-sport-254.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-254.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport255', name: 'Sky Sport 255', epgId: null, poster: COVER_P+'sky-sport-255.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-255.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport256', name: 'Sky Sport 256', epgId: null, poster: COVER_P+'sky-sport-256.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-256.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport257', name: 'Sky Sport 257', epgId: null, poster: COVER_P+'sky-sport-257.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-257.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport258', name: 'Sky Sport 258', epgId: null, poster: COVER_P+'sky-sport-258.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-258.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:skysport259', name: 'Sky Sport 259', epgId: null, poster: COVER_P+'sky-sport-259.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-259.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportuno', name: 'Sky Sport Uno', epgId: 'sky.sport.uno.it', poster: COVER_P+'sky-sport-uno.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-uno.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportmax', name: 'Sky Sport Max', epgId: 'sky.sport.max.it', poster: COVER_P+'sky-sport-max.jpg', logo: LOGO_BASE+'sky-sport-max-it.png', bg: COVER_L+'sky-sport-max.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportcalcio', name: 'Sky Sport Calcio', epgId: 'sky.sport.calcio.it', poster: COVER_P+'sky-sport-calcio.jpg', logo: LOGO_BASE+'sky-sport-calcio-it.png', bg: COVER_L+'sky-sport-calcio.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportf1', name: 'Sky Sport F1', epgId: 'sky.sport.f1.it', poster: COVER_P+'sky-sport-f1.jpg', logo: LOGO_BASE+'sky-sport-f1-it.png', bg: COVER_L+'sky-sport-f1.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportmotogp', name: 'Sky Sport MotoGP', epgId: 'sky.sport.motogp.it', poster: COVER_P+'sky-sport-motogp.jpg', logo: LOGO_BASE+'sky-sport-motogp-it.png', bg: COVER_L+'sky-sport-motogp.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysporttennis', name: 'Sky Sport Tennis', epgId: 'sky.sport.tennis.it', poster: COVER_P+'sky-sport-tennis.jpg', logo: LOGO_BASE+'sky-sport-tennis-it.png', bg: COVER_L+'sky-sport-tennis.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportgolf', name: 'Sky Sport Golf', epgId: 'sky.sport.golf.it', poster: COVER_P+'sky-sport-golf.jpg', logo: LOGO_BASE+'sky-sport-golf-it.png', bg: COVER_L+'sky-sport-golf.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportbasket', name: 'Sky Sport Basket', epgId: 'sky.sport.nba.it', poster: COVER_P+'sky-sport-basket.jpg', logo: LOGO_BASE+'sky-sport-nba-it.png', bg: COVER_L+'sky-sport-basket.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportarena', name: 'Sky Sport Arena', epgId: 'sky.sport.arena.it', poster: COVER_P+'sky-sport-arena.jpg', logo: LOGO_BASE+'sky-sport-arena-it.png', bg: COVER_L+'sky-sport-arena.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportlegend', name: 'Sky Sport Legend', epgId: 'sky.sport.legend.it', poster: COVER_P+'sky-sport-legend.jpg', logo: LOGO_BASE+'sky-sport-legend-it.png', bg: COVER_L+'sky-sport-legend.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysportmix', name: 'Sky Sport Mix', epgId: 'sky.sport.mix.it', poster: COVER_P+'sky-sport-mix.jpg', logo: LOGO_BASE+'sky-sport-mix-it.png', bg: COVER_L+'sky-sport-mix.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport24', name: 'Sky Sport 24', epgId: 'sky.sport.24.it', poster: COVER_P+'sky-sport-24.jpg', logo: LOGO_BASE+'sky-sport-24-it.png', bg: COVER_L+'sky-sport-24.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport251', name: 'Sky Sport 251', epgId: 'sky.sport..251.it', poster: COVER_P+'sky-sport-251.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-251.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport252', name: 'Sky Sport 252', epgId: 'sky.sport..252.it', poster: COVER_P+'sky-sport-252.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-252.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport253', name: 'Sky Sport 253', epgId: 'sky.sport..253.it', poster: COVER_P+'sky-sport-253.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-253.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport254', name: 'Sky Sport 254', epgId: 'sky.sport..254.it', poster: COVER_P+'sky-sport-254.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-254.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport255', name: 'Sky Sport 255', epgId: 'sky.sport..255.it', poster: COVER_P+'sky-sport-255.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-255.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport256', name: 'Sky Sport 256', epgId: 'sky.sport..256.it', poster: COVER_P+'sky-sport-256.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-256.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport257', name: 'Sky Sport 257', epgId: 'sky.sport..257.it', poster: COVER_P+'sky-sport-257.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-257.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport258', name: 'Sky Sport 258', epgId: 'sky.sport..258.it', poster: COVER_P+'sky-sport-258.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-258.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:skysport259', name: 'Sky Sport 259', epgId: 'sky.sport..259.it', poster: COVER_P+'sky-sport-259.jpg', logo: LOGO_BASE+'sky-sport-uno-it.png', bg: COVER_L+'sky-sport-259.jpg', catalog: 'italiantv', genre: 'Sky Sport', playlist: 'uaznao' },
     // SKY DOCUMENTARI
-    { id: 'mpdtv:skyarte', name: 'Sky Arte', epgId: null, poster: COVER_P+'sky-arte.jpg', logo: LOGO_BASE+'sky-arte-it.png', bg: COVER_L+'sky-arte.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
-    { id: 'mpdtv:skydocumentaries', name: 'Sky Documentaries', epgId: null, poster: COVER_P+'sky-documentaries.jpg', logo: LOGO_BASE+'sky-documentaries-it.png', bg: COVER_L+'sky-documentaries.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
-    { id: 'mpdtv:skynature', name: 'Sky Nature', epgId: null, poster: COVER_P+'sky-nature.jpg', logo: LOGO_BASE+'sky-nature-it.png', bg: COVER_L+'sky-nature.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
+    { id: 'mpdtv:skyarte', name: 'Sky Arte', epgId: 'sky.arte.it', poster: COVER_P+'sky-arte.jpg', logo: LOGO_BASE+'sky-arte-it.png', bg: COVER_L+'sky-arte.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
+    { id: 'mpdtv:skydocumentaries', name: 'Sky Documentaries', epgId: 'sky.documentaries.it', poster: COVER_P+'sky-documentaries.jpg', logo: LOGO_BASE+'sky-documentaries-it.png', bg: COVER_L+'sky-documentaries.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
+    { id: 'mpdtv:skynature', name: 'Sky Nature', epgId: 'sky.nature.it', poster: COVER_P+'sky-nature.jpg', logo: LOGO_BASE+'sky-nature-it.png', bg: COVER_L+'sky-nature.jpg', catalog: 'italiantv', genre: 'Sky Documentari', playlist: 'uaznao' },
     // SKY NEWS
-    { id: 'mpdtv:skytg24', name: 'Sky TG24', epgId: 'skytg24.it', poster: COVER_P+'sky-tg-24.jpg', logo: LOGO_BASE+'sky-tg24-it.png', bg: COVER_L+'sky-tg-24.jpg', catalog: 'italiantv', genre: 'Sky News', playlist: 'uaznao' },
+    { id: 'mpdtv:skytg24', name: 'Sky TG24', epgId: 'sky.tg24.it', poster: COVER_P+'sky-tg-24.jpg', logo: LOGO_BASE+'sky-tg24-it.png', bg: COVER_L+'sky-tg-24.jpg', catalog: 'italiantv', genre: 'Sky News', playlist: 'uaznao' },
     // SPORT
-    { id: 'mpdtv:dazn1', name: 'Dazn 1', epgId: null, poster: COVER_P+'dazn-1.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:dazn2', name: 'Dazn 2', epgId: null, poster: COVER_P+'dazn-2.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-2.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:dazn3', name: 'Dazn 3', epgId: null, poster: COVER_P+'dazn-3.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-3.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:dazn4', name: 'Dazn 4', epgId: null, poster: COVER_P+'dazn-4.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-4.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:dazn5', name: 'Dazn 5', epgId: null, poster: COVER_P+'dazn-1.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:eurosport1', name: 'Eurosport 1', epgId: null, poster: COVER_P+'eurosport-1.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
-    { id: 'mpdtv:eurosport2', name: 'Eurosport 2', epgId: null, poster: COVER_P+'eurosport-2.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-2.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:dazn1', name: 'Dazn 1', epgId: 'dazn.1.it.it', poster: COVER_P+'dazn-1.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:dazn2', name: 'Dazn 2', epgId: 'dazn.2.it.it', poster: COVER_P+'dazn-2.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-2.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:dazn3', name: 'Dazn 3', epgId: 'dazn.3.it.it', poster: COVER_P+'dazn-3.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-3.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:dazn4', name: 'Dazn 4', epgId: 'dazn4.it', poster: COVER_P+'dazn-4.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-4.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:dazn5', name: 'Dazn 5', epgId: 'dazn5.it', poster: COVER_P+'dazn-1.jpg', logo: LOGO_BASE+'dazn-channel-it.png', bg: COVER_L+'dazn-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:eurosport1', name: 'Eurosport 1', epgId: 'eurosport.1.italia.it', poster: COVER_P+'eurosport-1.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-1.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
+    { id: 'mpdtv:eurosport2', name: 'Eurosport 2', epgId: 'eurosport.2.italia.it', poster: COVER_P+'eurosport-2.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-2.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
     { id: 'mpdtv:eurosport3', name: 'Eurosport 3', epgId: null, poster: COVER_P+'eurosport-3.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-3.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
     { id: 'mpdtv:eurosport4', name: 'Eurosport 4', epgId: null, poster: COVER_P+'eurosport-4.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-4.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
     { id: 'mpdtv:eurosport5', name: 'Eurosport 5', epgId: null, poster: COVER_P+'eurosport-5.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'eurosport-5.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
@@ -128,7 +130,7 @@ const CANALI = [
     { id: 'mpdtv:sporttv5', name: 'Sport TV 5', epgId: null, poster: COVER_P+'sport-tv-5.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'sport-tv-5.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
     { id: 'mpdtv:sporttv6', name: 'Sport TV 6', epgId: null, poster: COVER_P+'sport-tv-6.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'sport-tv-6.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'uaznao' },
     { id: 'mpdtv:sportitalia', name: 'Sportitalia', epgId: 'sportitalia.it', poster: COVER_P+'sport-italia.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'sport-italia.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'zappr' },
-    { id: 'mpdtv:supertennis', name: 'SuperTennis', epgId: 'supertennis.it', poster: COVER_P+'supertennis.jpg', logo: LOGO_BASE+'super-tennis-it.png', bg: COVER_L+'supertennis.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'zappr' },
+    { id: 'mpdtv:supertennis', name: 'SuperTennis', epgId: 'supertennis.hd.it', poster: COVER_P+'supertennis.jpg', logo: LOGO_BASE+'super-tennis-it.png', bg: COVER_L+'supertennis.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'zappr' },
     // BAMBINI
     { id: 'mpdtv:boomerang', name: 'Boomerang', epgId: null, poster: COVER_P+'boomerang.jpg', logo: LOGO_BASE+'boomerang-it.png', bg: COVER_L+'boomerang.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
     { id: 'mpdtv:cartoonnetwork', name: 'Cartoon Network', epgId: null, poster: COVER_P+'cartoon-network.jpg', logo: LOGO_BASE+'cartoon-network-it.png', bg: COVER_L+'cartoon-network.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
@@ -142,25 +144,25 @@ const CANALI = [
     { id: 'mpdtv:cartoonito', name: 'Cartoonito', epgId: 'cartoonito.it', poster: COVER_P+'cartoonito.jpg', logo: LOGO_BASE+'cartoonito-it.png', bg: COVER_L+'cartoonito.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     { id: 'mpdtv:super', name: 'Super!', epgId: null, poster: COVER_P+'super.jpg', logo: LOGO_BASE+'super-it.png', bg: COVER_L+'super.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     // DOCUMENTARI
-    { id: 'mpdtv:history', name: 'History', epgId: null, poster: COVER_P+'history.jpg', logo: LOGO_BASE+'history-channel-it.png', bg: COVER_L+'history.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'uaznao' },
+    { id: 'mpdtv:history', name: 'History', epgId: 'history.it', poster: COVER_P+'history.jpg', logo: LOGO_BASE+'history-channel-it.png', bg: COVER_L+'history.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'uaznao' },
     { id: 'mpdtv:discovery', name: 'Discovery', epgId: 'discovery.it', poster: COVER_P+'discovery-channel.jpg', logo: LOGO_BASE+'discovery-channel-it.png', bg: COVER_L+'discovery-channel.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'zappr' },
     { id: 'mpdtv:discoveryturbo', name: 'Discovery Turbo', epgId: 'discoveryturbo.it', poster: COVER_P+'discovery-turbo.jpg', logo: LOGO_BASE+'discovery-turbo-it.png', bg: COVER_L+'discovery-turbo.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'zappr' },
     // MUSICA
-    { id: 'mpdtv:mtv', name: 'MTV', epgId: null, poster: COVER_P+'mtv.jpg', logo: LOGO_BASE+'mtv-it.png', bg: COVER_L+'mtv.jpg', catalog: 'italiantv', genre: 'Musica', playlist: 'uaznao' },
+    { id: 'mpdtv:mtv', name: 'MTV', epgId: 'mtv.hd.it', poster: COVER_P+'mtv.jpg', logo: LOGO_BASE+'mtv-it.png', bg: COVER_L+'mtv.jpg', catalog: 'italiantv', genre: 'Musica', playlist: 'uaznao' },
     { id: 'mpdtv:deejaytv', name: 'Deejay TV', epgId: 'deejaytv.it', poster: COVER_P+'deejay-tv.jpg', logo: LOGO_BASE+'deejay-tv-it.png', bg: COVER_L+'deejay-tv.jpg', catalog: 'italiantv', genre: 'Musica', playlist: 'zappr' },
     { id: 'mpdtv:kisskisstv', name: 'Kiss Kiss TV', epgId: null, poster: COVER_P+'kiss-kiss.jpg', logo: LOGO_BASE+'radio-kiss-kiss-tv-it.png', bg: COVER_L+'kiss-kiss.jpg', catalog: 'italiantv', genre: 'Musica', playlist: 'zappr' },
     // ALTRO
     { id: 'mpdtv:la7', name: 'LA7', epgId: 'la7.it', poster: COVER_P+'la-7.jpg', logo: LOGO_BASE+'la7-it.png', bg: COVER_L+'la-7.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:la7cinema', name: 'LA7 Cinema', epgId: 'la7cinema.it', poster: COVER_P+'la-7-d.jpg', logo: LOGO_BASE+'la7d-it.png', bg: COVER_L+'la-7-d.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
-    { id: 'mpdtv:tv8', name: 'TV8', epgId: 'tv8.it', poster: COVER_P+'tv-8.jpg', logo: LOGO_BASE+'tv8-it.png', bg: COVER_L+'tv-8.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
+    { id: 'mpdtv:tv8', name: 'TV8', epgId: 'tv8.hd.it', poster: COVER_P+'tv-8.jpg', logo: LOGO_BASE+'tv8-it.png', bg: COVER_L+'tv-8.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:nove', name: 'NOVE', epgId: 'nove.it', poster: COVER_P+'discovery-nove.jpg', logo: LOGO_BASE+'nove-it.png', bg: COVER_L+'discovery-nove.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:cielo', name: 'Cielo', epgId: 'cielo.it', poster: COVER_P+'cielo.jpg', logo: LOGO_BASE+'cielo-it.png', bg: COVER_L+'cielo.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:realtime', name: 'Real Time', epgId: 'realtime.it', poster: COVER_P+'real-time.jpg', logo: LOGO_BASE+'real-time-it.png', bg: COVER_L+'real-time.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:qvc', name: 'QVC', epgId: 'qvc.it', poster: COVER_P+'qvc.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'qvc.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:foodnetwork', name: 'Food Network', epgId: 'foodnetwork.it', poster: COVER_P+'food-network.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'food-network.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:giallo', name: 'Giallo', epgId: 'giallo.it', poster: COVER_P+'giallo.jpg', logo: LOGO_BASE+'giallo-it.png', bg: COVER_L+'giallo.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
-    { id: 'mpdtv:dmax', name: 'DMAX', epgId: null, poster: COVER_P+'dmax.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'dmax.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
-    { id: 'mpdtv:hgtv', name: 'HGTV - Home & Garden', epgId: null, poster: COVER_P+'hgtv.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'hgtv.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
+    { id: 'mpdtv:dmax', name: 'DMAX', epgId: 'dmax.it', poster: COVER_P+'dmax.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'dmax.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
+    { id: 'mpdtv:hgtv', name: 'HGTV - Home & Garden', epgId: 'hgtvhomeandgarden.it', poster: COVER_P+'hgtv.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'hgtv.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:france24', name: 'France 24', epgId: 'france24.it', poster: COVER_P+'france-24.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'france-24.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:tgcom24', name: 'TGcom24', epgId: 'tgcom24.it', poster: COVER_P+'tgcom-24.jpg', logo: LOGO_BASE+'tgcom24-it.png', bg: COVER_L+'tgcom-24.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
     { id: 'mpdtv:tv2000', name: 'TV2000', epgId: 'tv2000.it', poster: COVER_P+'tv-2000.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'tv-2000.jpg', catalog: 'italiantv', genre: 'Altro', playlist: 'zappr' },
@@ -168,9 +170,12 @@ const CANALI = [
 
 let cacheZappr = null;
 let cacheUaznao = null;
+let epgCache = null;
 let lastFetchZappr = 0;
 let lastFetchUaznao = 0;
+let lastFetchEpg = 0;
 const CACHE_TTL = 30 * 60 * 1000;
+const EPG_CACHE_TTL = 60 * 60 * 1000;
 
 function fetchUrl(url) {
     return new Promise((resolve, reject) => {
@@ -197,6 +202,51 @@ async function getPlaylist(type) {
     }
 }
 
+async function getEpg() {
+    const now = Date.now();
+    if (epgCache && now - lastFetchEpg < EPG_CACHE_TTL) return epgCache;
+    try {
+        const xml = await fetchUrl(EPG_URL);
+        epgCache = await parseStringPromise(xml);
+        lastFetchEpg = now;
+    } catch (e) {
+        console.error('EPG fetch error:', e);
+    }
+    return epgCache;
+}
+
+function parseEpgTime(t) {
+    const s = t.replace(/\s.*/, '');
+    return new Date(
+        parseInt(s.slice(0,4)),
+        parseInt(s.slice(4,6)) - 1,
+        parseInt(s.slice(6,8)),
+        parseInt(s.slice(8,10)),
+        parseInt(s.slice(10,12)),
+        parseInt(s.slice(12,14))
+    );
+}
+
+function getEpgInfo(epgData, epgId) {
+    if (!epgData || !epgId) return null;
+    try {
+        const programmes = epgData.tv.programme || [];
+        const now = new Date();
+        const channelProg = programmes.filter(p => p.$.channel === epgId);
+        const current = channelProg.find(p => {
+            const start = parseEpgTime(p.$.start);
+            const stop = parseEpgTime(p.$.stop);
+            return start <= now && stop > now;
+        });
+        const upcoming = channelProg
+            .filter(p => parseEpgTime(p.$.start) > now)
+            .slice(0, 5);
+        return { current, upcoming };
+    } catch (e) {
+        return null;
+    }
+}
+
 function parseStream(content, channelName) {
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -216,63 +266,6 @@ function parseStream(content, channelName) {
         }
     }
     return null;
-}
-
-const { parseStringPromise } = require('xml2js');
-
-const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
-let epgCache = null;
-let lastFetchEpg = 0;
-const EPG_CACHE_TTL = 60 * 60 * 1000; // 1 ora
-
-async function getEpg() {
-    const now = Date.now();
-    if (epgCache && now - lastFetchEpg < EPG_CACHE_TTL) return epgCache;
-    try {
-        const xml = await fetchUrl(EPG_URL);
-        const parsed = await parseStringPromise(xml);
-        epgCache = parsed;
-        lastFetchEpg = now;
-    } catch (e) {
-        console.error('EPG fetch error:', e);
-    }
-    return epgCache;
-}
-
-function parseEpgTime(t) {
-    // formato: 20260511013500 +0000
-    const s = t.replace(/\s.*/, '');
-    return new Date(
-        parseInt(s.slice(0,4)),
-        parseInt(s.slice(4,6)) - 1,
-        parseInt(s.slice(6,8)),
-        parseInt(s.slice(8,10)),
-        parseInt(s.slice(10,12)),
-        parseInt(s.slice(12,14))
-    );
-}
-
-function getEpgInfo(epgData, epgId) {
-    if (!epgData || !epgId) return null;
-    try {
-        const programmes = epgData.tv.programme || [];
-        const now = new Date();
-        const channelProg = programmes.filter(p => p.$.channel === epgId);
-        
-        const current = channelProg.find(p => {
-            const start = parseEpgTime(p.$.start);
-            const stop = parseEpgTime(p.$.stop);
-            return start <= now && stop > now;
-        });
-
-        const upcoming = channelProg
-            .filter(p => parseEpgTime(p.$.start) > now)
-            .slice(0, 5);
-
-        return { current, upcoming };
-    } catch (e) {
-        return null;
-    }
 }
 
 const builder = new addonBuilder(manifest);
