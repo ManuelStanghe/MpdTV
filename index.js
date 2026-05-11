@@ -215,7 +215,7 @@ async function getEpg() {
     return epgCache;
 }
 
-function parseEpgTime(t) {
+function parseEpgTime(t, offsetHours = 0) {
     const s = t.replace(/\s.*/, '');
     const utc = Date.UTC(
         parseInt(s.slice(0,4)),
@@ -225,27 +225,22 @@ function parseEpgTime(t) {
         parseInt(s.slice(10,12)),
         parseInt(s.slice(12,14))
     );
-    return new Date(utc);
+    return new Date(utc + offsetHours * 60 * 60 * 1000);
 }
 
-function getEpgInfo(epgData, epgId) {
+function getEpgInfo(epgData, epgId, offset = 0) {
     if (!epgData || !epgId) return null;
     try {
         const programmes = epgData.tv.programme || [];
         const now = new Date();
-        console.log('NOW UTC:', now.toISOString());
         const channelProg = programmes.filter(p => p.$.channel === epgId);
-        if (channelProg.length > 0) {
-            console.log('FIRST PROG START:', channelProg[0].$.start, '-> parsed:', parseEpgTime(channelProg[0].$.start).toISOString());
-        }
         const current = channelProg.find(p => {
-            const start = parseEpgTime(p.$.start);
-            const stop = parseEpgTime(p.$.stop);
+            const start = parseEpgTime(p.$.start, offset);
+            const stop = parseEpgTime(p.$.stop, offset);
             return start <= now && stop > now;
         });
-        console.log('CURRENT for', epgId, ':', current ? epgText(current.title) : 'none');
         const upcoming = channelProg
-            .filter(p => parseEpgTime(p.$.start) > now)
+            .filter(p => parseEpgTime(p.$.start, offset) > now)
             .slice(0, 5);
         return { current, upcoming };
     } catch (e) {
@@ -311,7 +306,9 @@ builder.defineMetaHandler(async ({ type, id }) => {
     if (canale.epgId) {
         try {
             const epgData = await getEpg();
-            const info = getEpgInfo(epgData, canale.epgId);
+            const isSky = canale.epgId && canale.epgId.includes('sky.');
+            const offset = isSky ? 0 : -2;
+            const info = getEpgInfo(epgData, canale.epgId, offset);
             if (info && info.current) {
                 const currentStart = parseEpgTime(info.current.$.start);
                 const currentStop = parseEpgTime(info.current.$.stop);
