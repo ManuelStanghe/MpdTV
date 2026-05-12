@@ -2,8 +2,8 @@ const { addonBuilder, serveHTTP } = require('stremio-addon-sdk');
 const https = require('https');
 const { parseStringPromise } = require('xml2js');
 
-const PLAYLIST_ZAPPR = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/refs/heads/main/playlist_zappr.m3u';
-const PLAYLIST_UAZNAO = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/refs/heads/main/playlist_uaznao.m3u';
+const PLAYLIST_ZAPPR = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https%3A%2F%2Fraw.githubusercontent.com%2FManuelStanghe%2FPlaylist%2Frefs%2Fheads%2Fmain%2Fplaylist_zappr.m3u%7Cnoproxy%3Dtrue&api_password=ep';
+const PLAYLIST_UAZNAO = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https%3A%2F%2Fraw.githubusercontent.com%2FManuelStanghe%2FPlaylist%2Frefs%2Fheads%2Fmain%2Fplaylist_uaznao.m3u&api_password=ep';
 const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
 
 const LOGO_BASE = 'https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/italy/';
