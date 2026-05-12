@@ -305,10 +305,12 @@ builder.defineMetaHandler(async ({ type, id }) => {
     if (canale.epgId) {
         try {
             const epgData = await getEpg();
-            const info = getEpgInfo(epgData, canale.epgId, -2);
+            const isSky = canale.epgId.includes('sky.');
+            const offset = isSky ? 0 : -2;
+            const info = getEpgInfo(epgData, canale.epgId, offset);
             if (info && info.current) {
                 const currentStart = parseEpgTime(info.current.$.start);
-                const csHH = currentStart.getUTCHours().toString().padStart(2, '0');
+                const csHH = (currentStart.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
                 const csMM = currentStart.getUTCMinutes().toString().padStart(2, '0');
 
                 releaseInfo = `In onda ora: ${epgText(info.current.title)} (${csHH}:${csMM})`;
@@ -316,7 +318,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = info.upcoming.map(p => {
                         const start = parseEpgTime(p.$.start);
-                        const sHH = start.getUTCHours().toString().padStart(2, '0');
+                        const sHH = (start.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
                         const sMM = start.getUTCMinutes().toString().padStart(2, '0');
                         return `${sHH}:${sMM} - ${epgText(p.title)}`;
                     }).join(' • ');
