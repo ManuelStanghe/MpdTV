@@ -14,7 +14,7 @@ const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
     name: 'MpdTV',
-    description: 'Canali MPD italiani live',
+    description: 'Canali MPD + Free live',
     types: ['tv'],
     catalogs: [
         {
