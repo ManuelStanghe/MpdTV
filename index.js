@@ -305,8 +305,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
     if (canale.epgId) {
         try {
             const epgData = await getEpg();
-            const isSky = canale.epgId.includes('sky.');
-            const offset = isSky ? 2 : -2;
+            const offset = -2;
             const info = getEpgInfo(epgData, canale.epgId, offset);
             if (info && info.current) {
                 const currentStart = new Date(parseEpgTime(info.current.$.start).getTime() + offset * 60 * 60 * 1000);
