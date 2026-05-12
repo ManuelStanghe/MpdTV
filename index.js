@@ -307,17 +307,17 @@ builder.defineMetaHandler(async ({ type, id }) => {
             const epgData = await getEpg();
             const info = getEpgInfo(epgData, canale.epgId, -2);
             if (info && info.current) {
-                const currentStart = new Date(parseEpgTime(info.current.$.start).getTime() + 2 * 60 * 60 * 1000);
-                const csHH = currentStart.getHours().toString().padStart(2, '0');
-                const csMM = currentStart.getMinutes().toString().padStart(2, '0');
+                const currentStart = parseEpgTime(info.current.$.start);
+                const csHH = currentStart.getUTCHours().toString().padStart(2, '0');
+                const csMM = currentStart.getUTCMinutes().toString().padStart(2, '0');
 
                 releaseInfo = `In onda ora: ${epgText(info.current.title)} (${csHH}:${csMM})`;
 
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = info.upcoming.map(p => {
-                        const start = new Date(parseEpgTime(p.$.start).getTime() + 2 * 60 * 60 * 1000);
-                        const sHH = start.getHours().toString().padStart(2, '0');
-                        const sMM = start.getMinutes().toString().padStart(2, '0');
+                        const start = parseEpgTime(p.$.start);
+                        const sHH = start.getUTCHours().toString().padStart(2, '0');
+                        const sMM = start.getUTCMinutes().toString().padStart(2, '0');
                         return `${sHH}:${sMM} - ${epgText(p.title)}`;
                     }).join(' • ');
                 }
