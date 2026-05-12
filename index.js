@@ -6,7 +6,7 @@ const PLAYLIST_ZAPPR = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https
 const PLAYLIST_UAZNAO = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https%3A%2F%2Fraw.githubusercontent.com%2FManuelStanghe%2FPlaylist%2Frefs%2Fheads%2Fmain%2Fplaylist_uaznao.m3u&api_password=ep';
 const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
 
-const LOGO_BASE = 'https://raw.githubusercontent.com/tv-logo/tv-logos/main/countries/italy/';
+const LOGO_BASE = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/main/Loghi/';
 const COVER_P = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/portrait/';
 const COVER_L = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/landscape/';
 
