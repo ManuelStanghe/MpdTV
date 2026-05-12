@@ -306,32 +306,24 @@ builder.defineMetaHandler(async ({ type, id }) => {
     if (canale.epgId) {
         try {
             const epgData = await getEpg();
-            const isSky = canale.epgId && canale.epgId.includes('sky.');
-            const offset = isSky ? 0 : -2;
+            const isSky = canale.epgId.includes('sky.');
+            const offset = isSky ? 2 : -2;
             const info = getEpgInfo(epgData, canale.epgId, offset);
             if (info && info.current) {
-                const currentStart = parseEpgTime(info.current.$.start);
-                const currentStop = parseEpgTime(info.current.$.stop);
+                const currentStart = parseEpgTime(info.current.$.start, offset);
                 const csHH = currentStart.getHours().toString().padStart(2, '0');
                 const csMM = currentStart.getMinutes().toString().padStart(2, '0');
-                const ceHH = currentStop.getHours().toString().padStart(2, '0');
-                const ceMM = currentStop.getMinutes().toString().padStart(2, '0');
 
-                releaseInfo = `In onda ora: ${epgText(info.current.title)}`;
+                releaseInfo = `In onda ora: ${epgText(info.current.title)} (${csHH}:${csMM})`;
 
-                let desc = '';
-    if (info.upcoming && info.upcoming.length > 0) {
-        desc += info.upcoming.map(p => {
-            const start = parseEpgTime(p.$.start);
-            const stop = parseEpgTime(p.$.stop);
-            const sHH = start.getHours().toString().padStart(2, '0');
-            const sMM = start.getMinutes().toString().padStart(2, '0');
-            const eHH = stop.getHours().toString().padStart(2, '0');
-            const eMM = stop.getMinutes().toString().padStart(2, '0');
-            return `${sHH}:${sMM} - ${eHH}:${eMM} ${epgText(p.title)}`;
-        }).join(' • ');
-}
-description = desc;
+                if (info.upcoming && info.upcoming.length > 0) {
+                    description = info.upcoming.map(p => {
+                        const start = parseEpgTime(p.$.start, offset);
+                        const sHH = start.getHours().toString().padStart(2, '0');
+                        const sMM = start.getMinutes().toString().padStart(2, '0');
+                        return `${sHH}:${sMM} - ${epgText(p.title)}`;
+                    }).join(' • ');
+                }
             }
         } catch (e) {
             console.error('EPG error:', e);
