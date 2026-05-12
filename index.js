@@ -14,13 +14,13 @@ const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
     name: 'MpdTV',
-    description: 'Canali italiani live',
+    description: 'Canali MPD italiani live',
     types: ['tv'],
     catalogs: [
         {
             type: 'tv',
             id: 'italiantv',
-            name: 'Canali Italiani',
+            name: 'Canali MPD',
             extra: [
                 {
                     name: 'genre',
@@ -50,7 +50,7 @@ const CANALI = [
     { id: 'mpdtv:raistoria', name: 'Rai Storia', epgId: 'raistoria.it', poster: COVER_P+'rai-storia.jpg', logo: LOGO_BASE+'rai-storia-it.png', bg: COVER_L+'rai-storia.jpg', catalog: 'italiantv', genre: 'Rai', playlist: 'zappr' },
     { id: 'mpdtv:raiscuola', name: 'Rai Scuola', epgId: 'raiscuola.it', poster: COVER_P+'rai-scuola.jpg', logo: LOGO_BASE+'rai-scuola-it.png', bg: COVER_L+'rai-scuola.jpg', catalog: 'italiantv', genre: 'Rai', playlist: 'zappr' },
     { id: 'mpdtv:raisport', name: 'Rai Sport', epgId: 'raisport+hd.it', poster: COVER_P+'rai-sport.jpg', logo: LOGO_BASE+'rai-sport-it.png', bg: COVER_L+'rai-sport.jpg', catalog: 'italiantv', genre: 'Rai', playlist: 'zappr' },
-    { id: 'mpdtv:rai4k', name: 'Rai 4K', epgId: null, poster: COVER_P+'rai-4k.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'rai-4k.jpg', catalog: 'italiantv', genre: 'Rai', playlist: 'zappr' },
+    { id: 'mpdtv:rai4k', name: 'Rai 4K', epgId: null, poster: COVER_P+'rai-4k.jpg', logo: LOGO_BASE+'rai_4k.png', bg: COVER_L+'rai-4k.jpg', catalog: 'italiantv', genre: 'Rai', playlist: 'zappr' },
     // MEDIASET
     { id: 'mpdtv:canale5', name: 'Canale 5', epgId: 'canale5.it', poster: COVER_P+'canale-5.jpg', logo: LOGO_BASE+'canale5-it.png', bg: COVER_L+'canale-5.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     { id: 'mpdtv:italia1', name: 'Italia 1', epgId: 'italia1.it', poster: COVER_P+'italia-1.jpg', logo: LOGO_BASE+'italia1-it.png', bg: COVER_L+'italia-1.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
@@ -62,8 +62,8 @@ const CANALI = [
     { id: 'mpdtv:20mediaset', name: '20 Mediaset', epgId: '20.it', poster: COVER_P+'20-mediaset.jpg', logo: LOGO_BASE+'20-it.png', bg: COVER_L+'20-mediaset.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     { id: 'mpdtv:mediasetextra', name: 'Mediaset Extra', epgId: 'mediasetextra.it', poster: COVER_P+'mediaset-extra.jpg', logo: LOGO_BASE+'mediaset-extra-it.png', bg: COVER_L+'mediaset-extra.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     { id: 'mpdtv:topcrime', name: 'Top Crime', epgId: 'topcrime.it', poster: COVER_P+'top-crime.jpg', logo: LOGO_BASE+'top-crime-it.png', bg: COVER_L+'top-crime.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
-    { id: 'mpdtv:focus', name: 'Focus', epgId: null, poster: COVER_P+'focus.jpg', logo: LOGO_BASE+'focus-it.png', bg: COVER_L+'focus.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
-    { id: 'mpdtv:cine34', name: 'Cine34', epgId: null, poster: COVER_P+'cine-34.jpg', logo: LOGO_BASE+'cine34-it.png', bg: COVER_L+'cine-34.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
+    { id: 'mpdtv:focus', name: 'Focus', epgId: 'focus.it', poster: COVER_P+'focus.jpg', logo: LOGO_BASE+'focus-it.png', bg: COVER_L+'focus.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
+    { id: 'mpdtv:cine34', name: 'Cine34', epgId: 'cine34.it', poster: COVER_P+'cine-34.jpg', logo: LOGO_BASE+'cine34-it.png', bg: COVER_L+'cine-34.jpg', catalog: 'italiantv', genre: 'Mediaset', playlist: 'zappr' },
     // SKY CINEMA
     { id: 'mpdtv:skycinemauno', name: 'Sky Cinema Uno', epgId: 'sky.cinema.uno.it', poster: COVER_P+'sky-cinema-uno.jpg', logo: LOGO_BASE+'sky-cinema-uno-it.png', bg: COVER_L+'sky-cinema-uno.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
     { id: 'mpdtv:skycinemadue', name: 'Sky Cinema Due', epgId: 'sky.cinema.due.it', poster: COVER_P+'sky-cinema-due.jpg', logo: LOGO_BASE+'sky-cinema-due-it.png', bg: COVER_L+'sky-cinema-due.jpg', catalog: 'italiantv', genre: 'Sky Cinema', playlist: 'uaznao' },
@@ -132,17 +132,17 @@ const CANALI = [
     { id: 'mpdtv:sportitalia', name: 'Sportitalia', epgId: 'sportitalia.it', poster: COVER_P+'sport-italia.jpg', logo: LOGO_BASE+'rai-1-it.png', bg: COVER_L+'sport-italia.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'zappr' },
     { id: 'mpdtv:supertennis', name: 'SuperTennis', epgId: 'supertennis.hd.it', poster: COVER_P+'supertennis.jpg', logo: LOGO_BASE+'super-tennis-it.png', bg: COVER_L+'supertennis.jpg', catalog: 'italiantv', genre: 'Sport', playlist: 'zappr' },
     // BAMBINI
-    { id: 'mpdtv:boomerang', name: 'Boomerang', epgId: null, poster: COVER_P+'boomerang.jpg', logo: LOGO_BASE+'boomerang-it.png', bg: COVER_L+'boomerang.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
-    { id: 'mpdtv:cartoonnetwork', name: 'Cartoon Network', epgId: null, poster: COVER_P+'cartoon-network.jpg', logo: LOGO_BASE+'cartoon-network-it.png', bg: COVER_L+'cartoon-network.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
-    { id: 'mpdtv:deakids', name: 'DeAKids', epgId: null, poster: COVER_P+'deakids.jpg', logo: LOGO_BASE+'dea-kids-it.png', bg: COVER_L+'deakids.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
-    { id: 'mpdtv:nickjr', name: 'Nick Jr', epgId: null, poster: COVER_P+'nick-jr.jpg', logo: LOGO_BASE+'nick-jr-it.png', bg: COVER_L+'nick-jr.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
-    { id: 'mpdtv:nickelodeon', name: 'Nickelodeon', epgId: null, poster: COVER_P+'nickelodeon.jpg', logo: LOGO_BASE+'nickelodeon-it.png', bg: COVER_L+'nickelodeon.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
+    { id: 'mpdtv:boomerang', name: 'Boomerang', epgId: 'boomerang.it', poster: COVER_P+'boomerang.jpg', logo: LOGO_BASE+'boomerang-it.png', bg: COVER_L+'boomerang.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
+    { id: 'mpdtv:cartoonnetwork', name: 'Cartoon Network', epgId: 'cartoon.network.it', poster: COVER_P+'cartoon-network.jpg', logo: LOGO_BASE+'cartoon-network-it.png', bg: COVER_L+'cartoon-network.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
+    { id: 'mpdtv:deakids', name: 'DeAKids', epgId: 'deakids.it', poster: COVER_P+'deakids.jpg', logo: LOGO_BASE+'dea-kids-it.png', bg: COVER_L+'deakids.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
+    { id: 'mpdtv:nickjr', name: 'Nick Jr', epgId: 'nick.jr.it', poster: COVER_P+'nick-jr.jpg', logo: LOGO_BASE+'nick-jr-it.png', bg: COVER_L+'nick-jr.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
+    { id: 'mpdtv:nickelodeon', name: 'Nickelodeon', epgId: 'nickelodeon.it', poster: COVER_P+'nickelodeon.jpg', logo: LOGO_BASE+'nickelodeon-it.png', bg: COVER_L+'nickelodeon.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'uaznao' },
     { id: 'mpdtv:boing', name: 'Boing', epgId: 'boing.it', poster: COVER_P+'boing.jpg', logo: LOGO_BASE+'boing-it.png', bg: COVER_L+'boing.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     { id: 'mpdtv:boingplus', name: 'Boing Plus', epgId: 'boingplus.it', poster: COVER_P+'boing.jpg', logo: LOGO_BASE+'boing-it.png', bg: COVER_L+'boing.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     { id: 'mpdtv:k2', name: 'K2', epgId: 'k2.it', poster: COVER_P+'k2.jpg', logo: LOGO_BASE+'k2-it.png', bg: COVER_L+'k2.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     { id: 'mpdtv:frisbee', name: 'Frisbee', epgId: 'frisbee.it', poster: COVER_P+'frisbee.jpg', logo: LOGO_BASE+'frisbee-it.png', bg: COVER_L+'frisbee.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     { id: 'mpdtv:cartoonito', name: 'Cartoonito', epgId: 'cartoonito.it', poster: COVER_P+'cartoonito.jpg', logo: LOGO_BASE+'cartoonito-it.png', bg: COVER_L+'cartoonito.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
-    { id: 'mpdtv:super', name: 'Super!', epgId: null, poster: COVER_P+'super.jpg', logo: LOGO_BASE+'super-it.png', bg: COVER_L+'super.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
+    { id: 'mpdtv:super', name: 'Super!', epgId: 'super!.it', poster: COVER_P+'super.jpg', logo: LOGO_BASE+'super-it.png', bg: COVER_L+'super.jpg', catalog: 'italiantv', genre: 'Bambini', playlist: 'zappr' },
     // DOCUMENTARI
     { id: 'mpdtv:history', name: 'History', epgId: 'history.it', poster: COVER_P+'history.jpg', logo: LOGO_BASE+'history-channel-it.png', bg: COVER_L+'history.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'uaznao' },
     { id: 'mpdtv:discovery', name: 'Discovery', epgId: 'discovery.it', poster: COVER_P+'discovery-channel.jpg', logo: LOGO_BASE+'discovery-channel-it.png', bg: COVER_L+'discovery-channel.jpg', catalog: 'italiantv', genre: 'Documentari', playlist: 'zappr' },
