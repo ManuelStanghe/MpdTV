@@ -13,14 +13,14 @@ const COVER_L = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/gener
 const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
-    name: 'MpdTV',
-    description: 'Canali MPD + Free live',
+    name: 'MPDTv',
+    description: 'Canali ZAPPR + UAZNAO',
     types: ['tv'],
     catalogs: [
         {
             type: 'tv',
             id: 'italiantv',
-            name: 'Canali MPD',
+            name: 'MPDTv',
             extra: [
                 {
                     name: 'genre',
@@ -366,4 +366,4 @@ builder.defineStreamHandler(async ({ type, id }) => {
 });
 
 serveHTTP(builder.getInterface(), { port: 7777 });
-console.log('MpdTV addon in ascolto su http://localhost:7777');
+console.log('MPDTv addon in ascolto su http://localhost:7777');
