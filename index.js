@@ -14,7 +14,7 @@ const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
     name: 'MPDTv',
-    description: 'Canali ZAPPR + UAZNAO',
+    description: 'Canali ZAPPR + UAZNAO con EPG integrata',
     types: ['tv'],
     catalogs: [
         {
