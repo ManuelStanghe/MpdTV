@@ -215,32 +215,31 @@ async function getEpg() {
     return epgCache;
 }
 
-function parseEpgTime(t, offsetHours = 0) {
+function parseEpgTime(t) {
     const s = t.replace(/\s.*/, '');
-    const utc = Date.UTC(
+    return new Date(Date.UTC(
         parseInt(s.slice(0,4)),
         parseInt(s.slice(4,6)) - 1,
         parseInt(s.slice(6,8)),
         parseInt(s.slice(8,10)),
         parseInt(s.slice(10,12)),
         parseInt(s.slice(12,14))
-    );
-    return new Date(utc + offsetHours * 60 * 60 * 1000);
+    ));
 }
 
 function getEpgInfo(epgData, epgId, offset = 0) {
     if (!epgData || !epgId) return null;
     try {
         const programmes = epgData.tv.programme || [];
-        const now = new Date();
+        const now = new Date(Date.now() - offset * 60 * 60 * 1000);
         const channelProg = programmes.filter(p => p.$.channel === epgId);
         const current = channelProg.find(p => {
-            const start = parseEpgTime(p.$.start, offset);
-            const stop = parseEpgTime(p.$.stop, offset);
+            const start = parseEpgTime(p.$.start);
+            const stop = parseEpgTime(p.$.stop);
             return start <= now && stop > now;
         });
         const upcoming = channelProg
-            .filter(p => parseEpgTime(p.$.start, offset) > now)
+            .filter(p => parseEpgTime(p.$.start) > now)
             .slice(0, 5);
         return { current, upcoming };
     } catch (e) {
@@ -310,7 +309,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
             const offset = isSky ? 2 : -2;
             const info = getEpgInfo(epgData, canale.epgId, offset);
             if (info && info.current) {
-                const currentStart = parseEpgTime(info.current.$.start, offset);
+                const currentStart = new Date(parseEpgTime(info.current.$.start).getTime() + offset * 60 * 60 * 1000);
                 const csHH = currentStart.getHours().toString().padStart(2, '0');
                 const csMM = currentStart.getMinutes().toString().padStart(2, '0');
 
@@ -318,7 +317,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
 
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = info.upcoming.map(p => {
-                        const start = parseEpgTime(p.$.start, offset);
+                        const start = new Date(parseEpgTime(p.$.start).getTime() + offset * 60 * 60 * 1000);
                         const sHH = start.getHours().toString().padStart(2, '0');
                         const sMM = start.getMinutes().toString().padStart(2, '0');
                         return `${sHH}:${sMM} - ${epgText(p.title)}`;
