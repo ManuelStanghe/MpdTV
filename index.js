@@ -305,10 +305,9 @@ builder.defineMetaHandler(async ({ type, id }) => {
     if (canale.epgId) {
         try {
             const epgData = await getEpg();
-            const offset = -2;
-            const info = getEpgInfo(epgData, canale.epgId, offset);
+            const info = getEpgInfo(epgData, canale.epgId, -2);
             if (info && info.current) {
-                const currentStart = new Date(parseEpgTime(info.current.$.start).getTime() + offset * 60 * 60 * 1000);
+                const currentStart = new Date(parseEpgTime(info.current.$.start).getTime() + 2 * 60 * 60 * 1000);
                 const csHH = currentStart.getHours().toString().padStart(2, '0');
                 const csMM = currentStart.getMinutes().toString().padStart(2, '0');
 
@@ -316,7 +315,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
 
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = info.upcoming.map(p => {
-                        const start = new Date(parseEpgTime(p.$.start).getTime() + offset * 60 * 60 * 1000);
+                        const start = new Date(parseEpgTime(p.$.start).getTime() + 2 * 60 * 60 * 1000);
                         const sHH = start.getHours().toString().padStart(2, '0');
                         const sMM = start.getMinutes().toString().padStart(2, '0');
                         return `${sHH}:${sMM} - ${epgText(p.title)}`;
