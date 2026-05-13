@@ -313,7 +313,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
                 const csHH = (currentStart.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
                 const csMM = currentStart.getUTCMinutes().toString().padStart(2, '0');
 
-                releaseInfo = `▸  ${epgText(info.current.title)} (${csHH}:${csMM})`;
+                releaseInfo = `⫸  ${epgText(info.current.title)} (${csHH}:${csMM})`;
 
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = 'Prossimi programmi:\n' + info.upcoming.map(p => {
