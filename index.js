@@ -316,11 +316,11 @@ builder.defineMetaHandler(async ({ type, id }) => {
                 releaseInfo = `In onda ora: ${epgText(info.current.title)} (${csHH}:${csMM})`;
 
                 if (info.upcoming && info.upcoming.length > 0) {
-                    description = '📺 Prossimi programmi:\n' + info.upcoming.map(p => {
+                    description = 'Prossimi programmi:\n' + info.upcoming.map(p => {
                         const start = parseEpgTime(p.$.start);
                         const sHH = (start.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
                         const sMM = start.getUTCMinutes().toString().padStart(2, '0');
-                        return `⏩ ${sHH}:${sMM} - ${epgText(p.title)}`;
+                        return `◉ ${sHH}:${sMM} - ${epgText(p.title)}`;
                     }).join('\n');
                 }
             }
