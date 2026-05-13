@@ -323,7 +323,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
                         const titolo = epgText(p.title);
                         const desc = epgText(p.desc);
                         return `◉ ${sHH}:${sMM} - ${titolo}${desc ? '\n' + desc : ''}`;
-                    }).join('\n');
+                    }).join('\n\n');
                 }
             }
         } catch (e) {
