@@ -9,7 +9,7 @@ const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/hea
 const LOGO_BASE = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/main/Loghi/';
 const COVER_P = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/portrait/';
 const COVER_L = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/landscape/';
-
+//prova
 const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
