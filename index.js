@@ -392,7 +392,7 @@ app.get('/', (req, res) => {
 </head>
 <body>
     <h1>📺 MPDTv</h1>
-    <p>Canali italiani live con EPG integrata</p>
+    <p>Canali ZAPPR + UAZNAO con EPG integrata</p>
     <a class="btn btn-install" href="stremio://mpdtv.stremioms.dpdns.org/manifest.json">▶ Installa su Stremio</a>
     <button class="btn btn-copy" onclick="copia()">📋 Copia URL Manifest</button>
     <div id="msg"></div>
