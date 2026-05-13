@@ -320,7 +320,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
                         const start = parseEpgTime(p.$.start);
                         const sHH = (start.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
                         const sMM = start.getUTCMinutes().toString().padStart(2, '0');
-                        return `◉ ${sHH}:${sMM} - ${epgText(p.title)}`;
+                        return `◉ ${sHH}:${sMM} - ${titolo}${desc ? '  •  ' + desc : ''}`;
                     }).join('\n');
                 }
             }
