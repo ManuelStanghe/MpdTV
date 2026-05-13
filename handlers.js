@@ -84,7 +84,7 @@ function defineStreamHandler(builder) {
             const content = await getPlaylist(canale.playlist);
             const streamInfo = parseStream(content, canale.name);
             if (!streamInfo) return { streams: [] };
-            const stream = { title: canale.name, url: streamInfo.url };
+            const stream = { name: '⫸', title: canale.name, url: streamInfo.url };
             if (streamInfo.licenseKey && streamInfo.licenseType === 'org.w3.clearkey') {
                 const parts = streamInfo.licenseKey.split(':');
                 if (parts.length === 2) {
