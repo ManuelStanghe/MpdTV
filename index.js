@@ -289,7 +289,7 @@ builder.defineCatalogHandler(({ type, id, extra }) => {
         name: c.name,
         poster: c.poster,
         logo: c.logo,
-        background: c.bg,
+        //background: c.bg,
         genres: [c.genre]
     }));
     return Promise.resolve({ metas });
@@ -336,7 +336,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
             name: canale.name,
             poster: canale.poster,
             logo: canale.logo,
-            background: canale.bg,
+            //background: canale.bg,
             genres: [canale.genre],
             releaseInfo,
             description,
