@@ -317,13 +317,13 @@ builder.defineMetaHandler(async ({ type, id }) => {
 
                 if (info.upcoming && info.upcoming.length > 0) {
                     description = 'Prossimi programmi:\n' + info.upcoming.map(p => {
-                        const start = parseEpgTime(p.$.start);
-                        const sHH = (start.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
-                        const sMM = start.getUTCMinutes().toString().padStart(2, '0');
-                        const titolo = epgText(p.title);
-                        const desc = epgText(p.desc);
-                        return `◉ ${sHH}:${sMM} - ${titolo}${desc ? '  •  ' + desc : ''}`;
-                    }).join('\n');
+    const start = parseEpgTime(p.$.start);
+    const sHH = (start.getUTCHours() + (isSky ? 2 : 0)).toString().padStart(2, '0');
+    const sMM = start.getUTCMinutes().toString().padStart(2, '0');
+    const titolo = epgText(p.title);
+    const desc = epgText(p.desc);
+    return `◉ ${sHH}:${sMM} - ${titolo}${desc ? '\n   ' + desc : ''}`;
+}).join('\n');
                 }
             }
         } catch (e) {
