@@ -5,11 +5,11 @@ const { parseStringPromise } = require('xml2js');
 const PLAYLIST_ZAPPR = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https%3A%2F%2Fraw.githubusercontent.com%2FManuelStanghe%2FPlaylist%2Frefs%2Fheads%2Fmain%2Fplaylist_zappr.m3u%7Cnoproxy%3Dtrue&api_password=ep';
 const PLAYLIST_UAZNAO = 'https://easyproxy.stremioms.dpdns.org/playlist?url=https%3A%2F%2Fraw.githubusercontent.com%2FManuelStanghe%2FPlaylist%2Frefs%2Fheads%2Fmain%2Fplaylist_uaznao.m3u&api_password=ep';
 const EPG_URL = 'https://raw.githubusercontent.com/leanhhu061206/LIVETV/refs/heads/main/epg.xml';
-
+const BG_DEFAULT = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/bg.jpg';
 const LOGO_BASE = 'https://raw.githubusercontent.com/ManuelStanghe/Playlist/main/Loghi/';
 const COVER_P = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/portrait/';
 const COVER_L = 'https://raw.githubusercontent.com/ManuelStanghe/logo/main/generated-covers-world/landscape/';
-//prova
+
 const manifest = {
     id: 'org.mpdtv',
     version: '1.0.0',
@@ -289,7 +289,7 @@ builder.defineCatalogHandler(({ type, id, extra }) => {
         name: c.name,
         poster: c.poster,
         logo: c.logo,
-        //background: c.bg,
+        background: BG_DEFAULT,
         genres: [c.genre]
     }));
     return Promise.resolve({ metas });
@@ -336,7 +336,7 @@ builder.defineMetaHandler(async ({ type, id }) => {
             name: canale.name,
             poster: canale.poster,
             logo: canale.logo,
-            //background: canale.bg,
+            background: BG_DEFAULT,
             genres: [canale.genre],
             releaseInfo,
             description,
