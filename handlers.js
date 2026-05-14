@@ -10,6 +10,10 @@ function defineCatalogHandler(builder) {
         if (extra && extra.genre) {
             canali = canali.filter(c => c.genre === extra.genre);
         }
+        if (extra && extra.search) {
+            const q = extra.search.toLowerCase();
+            canali = canali.filter(c => c.name.toLowerCase().includes(q));
+        }
         const metas = canali.map(c => ({
             id: c.id,
             type: 'tv',
