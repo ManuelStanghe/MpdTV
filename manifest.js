@@ -15,6 +15,7 @@ const manifest = {
                     options: ['Rai', 'Mediaset', 'Sky Cinema', 'Sky Sport', 'Sky Serie', 'Sky Intrattenimento', 'Sky Documentari', 'Sky News', 'Sport', 'Bambini', 'Documentari', 'Musica', 'Altro'],
                     isRequired: false
                 },
+                { name: 'search', isRequired: false },
                 { name: 'skip', isRequired: false }
             ]
         }
