@@ -34,6 +34,56 @@ async function getPlaylist(type) {
     }
 }
 
+// Legge tutta la playlist e restituisce array di canali
+function parseAllChannels(content, type) {
+    const lines = content.split('\n');
+    const canali = [];
+    let i = 0;
+
+    while (i < lines.length) {
+        const line = lines[i].trim();
+
+        if (line.startsWith('#EXTINF')) {
+            // Estrai il nome dal tag EXTINF (dopo l'ultima virgola)
+            const commaIdx = line.lastIndexOf(',');
+            if (commaIdx === -1) { i++; continue; }
+            const nome = line.slice(commaIdx + 1).trim();
+
+            const canale = { name: nome, url: null, licenseType: null, licenseKey: null, playlist: type };
+
+            i++;
+            while (i < lines.length && !lines[i].trim().startsWith('#EXTINF') && !lines[i].trim().startsWith('#EXTM3U')) {
+                const l = lines[i].trim();
+                if (l.startsWith('#KODIPROP:inputstream.adaptive.license_type='))
+                    canale.licenseType = l.split('=')[1].trim();
+                else if (l.startsWith('#KODIPROP:inputstream.adaptive.license_key='))
+                    canale.licenseKey = l.split('=').slice(1).join('=').trim();
+                else if (l.startsWith('http'))
+                    canale.url = l;
+                i++;
+            }
+
+            if (canale.url) canali.push(canale);
+        } else {
+            i++;
+        }
+    }
+
+    return canali;
+}
+
+// Restituisce tutti i canali da entrambe le playlist
+async function getAllChannels() {
+    const [zappr, uaznao] = await Promise.all([
+        getPlaylist('zappr'),
+        getPlaylist('uaznao')
+    ]);
+    return [
+        ...parseAllChannels(zappr, 'zappr'),
+        ...parseAllChannels(uaznao, 'uaznao')
+    ];
+}
+
 function parseStream(content, channelName) {
     const lines = content.split('\n');
     for (let i = 0; i < lines.length; i++) {
@@ -55,4 +105,4 @@ function parseStream(content, channelName) {
     return null;
 }
 
-module.exports = { getPlaylist, parseStream };
+module.exports = { getPlaylist, parseStream, getAllChannels };
