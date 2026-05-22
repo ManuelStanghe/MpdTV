@@ -13,7 +13,6 @@ defineStreamHandler(builder);
 
 const app = express();
 
-// Pagina home con pulsante copia manifest
 app.get('/', (req, res) => {
     const manifestUrl = 'https://mpdtv.stremioms.dpdns.org/manifest.json';
     res.send(`<!DOCTYPE html>
@@ -51,7 +50,6 @@ app.get('/', (req, res) => {
 </html>`);
 });
 
-// Tutto il resto va all'addon SDK
 app.use(getRouter(builder.getInterface()));
 
 app.listen(7777, () => {
